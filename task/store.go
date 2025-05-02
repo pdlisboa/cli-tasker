@@ -10,22 +10,17 @@ func LoadFileContent[T any](filename string) (T, error) {
 
 	file, err := os.Open(filename)
 
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
 	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&data)
 
-	errDecode := decoder.Decode(&data)
-
-	return data, errDecode
+	defer file.Close()
+	return data, err
 }
 
 func WriteFile[T any](content T, filename string) error {
 	file, err := os.Create(filename)
 
-	if err != nil {
+	if err == nil {
 		encoder := json.NewEncoder(file)
 		err = encoder.Encode(content)
 

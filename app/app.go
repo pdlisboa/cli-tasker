@@ -1,13 +1,16 @@
 package app
 
 import (
+	"cli-tasker/task"
+	"fmt"
+
 	"github.com/urfave/cli"
 )
 
 func GetApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "Cli tasker"
-	app.Usage = "Use this manage personal tasks"
+	app.Usage = "Manage personal tasks"
 	applyCommands(app)
 
 	return app
@@ -22,28 +25,32 @@ func applyCommands(app *cli.App) {
 			Flags: []cli.Flag{
 				cli.StringFlag{Name: "name"},
 			},
-			Action: func() {},
+			Action: func(ctx *cli.Context) {
+				task.AddTask(ctx.String("name"))
+
+				fmt.Println("Task Created!")
+			},
 		},
 		{
 			Name:        "list",
 			Description: "List tasks",
-			Action:      func() {},
+			Action:      func(_ *cli.Context) { fmt.Println(task.ListTasks()) },
 		},
 		{
 			Name:        "done",
 			Description: "Complete task",
 			Flags: []cli.Flag{
-				cli.IntFlag{Name: "id"},
+				cli.UintFlag{Name: "id"},
 			},
-			Action: func() {},
+			Action: func(ctx *cli.Context) { task.CompleteTask(ctx.Uint("id")) },
 		},
 		{
 			Name:        "cancel",
 			Description: "Cancel  task",
 			Flags: []cli.Flag{
-				cli.IntFlag{Name: "id"},
+				cli.UintFlag{Name: "id"},
 			},
-			Action: func() {},
+			Action: func(ctx *cli.Context) { task.CancelTask(ctx.Uint("id")) },
 		},
 	}
 	app.Commands = commands
