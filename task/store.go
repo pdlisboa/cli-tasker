@@ -21,8 +21,12 @@ func WriteFile[T any](content T, filename string) error {
 	file, err := os.Create(filename)
 
 	if err == nil {
-		encoder := json.NewEncoder(file)
-		err = encoder.Encode(content)
+		data, err := json.MarshalIndent(content, "", "  ")
+		if err != nil {
+			return err
+		}
+		_, err = file.Write(data)
+		return err
 
 	}
 	defer file.Close()

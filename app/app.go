@@ -2,7 +2,6 @@ package app
 
 import (
 	"cli-tasker/task"
-	"fmt"
 
 	"github.com/urfave/cli"
 )
@@ -28,13 +27,12 @@ func applyCommands(app *cli.App) {
 			Action: func(ctx *cli.Context) {
 				task.AddTask(ctx.String("name"))
 
-				fmt.Println("Task Created!")
 			},
 		},
 		{
 			Name:        "list",
 			Description: "List tasks",
-			Action:      func(_ *cli.Context) { fmt.Println(task.ListTasks()) },
+			Action:      func(_ *cli.Context) { task.ListTasks() },
 		},
 		{
 			Name:        "done",

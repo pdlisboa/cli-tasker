@@ -2,10 +2,11 @@ package task
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/fatih/color"
 )
 
 var FILE string
@@ -31,6 +32,7 @@ func AddTask(name string) {
 	tasks = append(tasks, task)
 
 	err2 := WriteFile(tasks, FILE)
+	color.New(color.FgGreen).Println("Task Created!")
 
 	if err2 != nil {
 		log.Fatal(err2)
@@ -38,15 +40,35 @@ func AddTask(name string) {
 	}
 }
 
-func ListTasks() []Task {
+func ListTasks() {
 	tasks, err := LoadFileContent[[]Task](FILE)
+	red := color.New(color.FgRed)
+	green := color.New(color.FgGreen)
+	blue := color.New(color.FgBlue)
 
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
+	color.New(color.BgHiWhite).Printf("%-4s %-20s %-10s %-10s\n", "ID", "Name", "Completed", "Canceled")
 
-	return tasks
+	for _, task := range tasks {
+		completed := "[ ]"
+		canceled := "[ ]"
+		color := blue
+
+		if isCompleted(task) {
+			completed = "[x]"
+			color = green
+		}
+		if isCanceled(task) {
+			canceled = "[x]"
+			color = red
+		}
+
+		color.Printf("%-4d %-20s %-10s %-10s\n", task.Id, task.Name, completed, canceled)
+	}
+
 }
 
 func CompleteTask(taskId uint) error {
@@ -70,7 +92,7 @@ func editStatus(taskId uint, status string) error {
 			tasks[idx].Status = status
 			found = true
 
-			fmt.Printf("Changing task status %d -  %+v \n", taskId, tasks[idx])
+			color.New(color.FgHiYellow).Printf("Changing task status %d -  %s \n", taskId, tasks[idx].Status)
 			break
 		}
 
@@ -86,4 +108,11 @@ func editStatus(taskId uint, status string) error {
 
 	return nil
 
+}
+
+func isCanceled(task Task) bool {
+	return task.Status == "CANCELED"
+}
+func isCompleted(task Task) bool {
+	return task.Status == "COMPLETE"
 }
